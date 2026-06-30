@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Repair Guide</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<h1>📝 Add Repair Guide</h1>
+<p>Mobile Repair Hub Admin</p>
+</header>
+
+<div class="card">
+
+<select id="brandName">
+<option value="">📱 Select Brand</option>
+</select>
+
+<br><br>
+
+<input
+type="text"
+id="modelName"
+placeholder="📱 Mobile Model">
+
+<br><br>
+
+<input
+type="text"
+id="repairType"
+placeholder="🔧 Repair Type (Display, Battery, Charging...)">
+
+<br><br>
+
+<label><b>📷 Select Repair Image</b></label>
+
+<input
+type="file"
+id="imageFile"
+accept="image/*">
+
+<br><br>
+
+<button
+type="button"
+id="uploadImageBtn">
+📤 Upload Image
+</button>
+
+<br><br>
+
+<input
+type="text"
+id="imageUrl"
+placeholder="🖼️ Image URL"
+readonly>
+
+<br><br>
+
+<input
+type="text"
+id="videoUrl"
+placeholder="▶️ YouTube Video URL">
+
+<br><br>
+
+<input
+type="text"
+id="tools"
+placeholder="🛠️ Required Tools (Example: Screwdriver, Pry Tool, Tweezers)">
+
+<br><br>
+
+<input
+type="text"
+id="parts"
+placeholder="📦 Spare Parts (Example: Display, Battery, Battery Adhesive)">
+
+<br><br>
+
+<input
+type="text"
+id="repairTime"
+placeholder="⏱️ Repair Time (Example: 30 Minutes)">
+
+<br><br>
+
+<select id="difficulty">
+<option value="">⭐ Select Difficulty</option>
+<option value="🟢 Easy">🟢 Easy</option>
+<option value="🟡 Medium">🟡 Medium</option>
+<option value="🔴 Hard">🔴 Hard</option>
+</select>
+
+<br><br>
+
+<textarea
+id="guideText"
+rows="12"
+placeholder="📝 Step-by-Step Repair Guide
+
+Step 1: Power Off Phone
+
+Step 2: Remove SIM Tray
+
+Step 3: Open Back Cover
+
+Step 4: Disconnect Battery
+
+Step 5: Remove Display
+
+Step 6: Install New Display
+
+Step 7: Test Phone"></textarea>
+
+<br><br>
+
+<button id="saveGuideBtn">
+💾 Save Guide
+</button>
+
+<br><br>
+
+<a href="admin.html">
+<button>
+⬅ Back to Dashboard
+</button>
+</a>
+
+</div>
+
+<script type="module" src="add-guide.js"></script>
+
+</body>
+</html>

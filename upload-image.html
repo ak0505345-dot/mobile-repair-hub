@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Repair Image</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<h1>📷 Upload Repair Image</h1>
+<p>Mobile Repair Hub Admin</p>
+</header>
+
+<div class="card">
+
+<label>Select Image</label>
+<input
+type="file"
+id="imageFile"
+accept="image/*">
+
+<br><br>
+
+<label>Brand Name</label>
+<input
+type="text"
+id="brand"
+placeholder="Samsung">
+
+<br><br>
+
+<label>Model Name</label>
+<input
+type="text"
+id="model"
+placeholder="Galaxy A15">
+
+<br><br>
+
+<button id="uploadBtn">
+📤 Upload Image
+</button>
+
+<br><br>
+
+<label>Image URL</label>
+
+<input
+type="text"
+id="imageUrl"
+readonly
+placeholder="Image URL will appear here">
+
+<br><br>
+
+<button id="copyBtn">
+📋 Copy URL
+</button>
+
+<br><br>
+
+<a href="admin.html">
+<button>
+⬅ Back to Dashboard
+</button>
+</a>
+
+</div>
+
+<script src="upload-image.js"></script>
+
+</body>
+</html>

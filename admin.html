@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<h1>👨‍💼 Admin Dashboard</h1>
+<p>Mobile Repair Hub</p>
+
+<p id="userEmail">Loading...</p>
+
+<button id="logoutBtn">
+🚪 Logout
+</button>
+
+</header>
+
+<div class="card">
+
+<h2>📊 Dashboard Statistics</h2>
+
+<p>📱 Total Brands : <span id="brandCount">0</span></p>
+
+<p>📲 Total Models : <span id="modelCount">0</span></p>
+
+<p>📖 Total Guides : <span id="guideCount">0</span></p>
+
+<p>👥 Total Users : <span id="userCount">0</span></p>
+
+</div>
+
+<div class="card">
+
+<button onclick="location.href='add-brand.html'">
+➕ Add Brand
+</button>
+
+<br><br>
+
+<button onclick="location.href='add-model.html'">
+📱 Add Mobile Model
+</button>
+
+<br><br>
+
+<button onclick="location.href='add-guide.html'">
+📝 Add Repair Guide
+</button>
+
+<br><br>
+
+<button onclick="location.href='manage-guides.html'">
+📋 Manage Guides
+</button>
+
+<br><br>
+
+<button onclick="location.href='upload-image.html'">
+📷 Upload Images
+</button>
+
+<br><br>
+
+<button onclick="location.href='add-video.html'">
+🎥 Add Video Link
+</button>
+
+<br><br>
+
+<button onclick="location.href='manage-users.html'">
+👥 Manage Users
+</button>
+
+<br><br>
+
+<button onclick="location.href='settings.html'">
+⚙️ Settings
+</button>
+
+<br><br>
+
+<a href="index.html">
+<button>
+⬅ Back Home
+</button>
+</a>
+
+</div>
+
+<script type="module" src="admin.js"></script>
+
+</body>
+</html>
