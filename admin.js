@@ -2,7 +2,9 @@ import { auth, db } from "./firebase.js";
 
 import {
   collection,
-  getDocs
+  getDocs,
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 import {
@@ -12,15 +14,48 @@ import {
 
 
 // ----------------------
-// AUTH CHECK + USER INFO
+// AUTH + ADMIN CHECK
 // ----------------------
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
     window.location.href = "login.html";
-  } else {
+    return;
+  }
+
+  try {
+
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      alert("❌ User data not found.");
+      await signOut(auth);
+      window.location.href = "login.html";
+      return;
+    }
+
+    const userData = userSnap.data();
+
+    if (userData.role !== "admin") {
+      alert("⛔ Access Denied! Admin only.");
+      await signOut(auth);
+      window.location.href = "login.html";
+      return;
+    }
+
     document.getElementById("userEmail").textContent =
       "👤 " + user.email;
+
+    loadDashboard();
+
+  } catch (error) {
+
+    console.log(error);
+    alert("❌ Failed to verify admin.");
+    await signOut(auth);
+    window.location.href = "login.html";
+
   }
 
 });
@@ -69,5 +104,3 @@ async function loadDashboard() {
   }
 
 }
-
-loadDashboard();
