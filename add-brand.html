@@ -1,22 +1,47 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>Add Brand</title>  
-<link rel="stylesheet" href="style.css">  
-</head>  
-<body>  <header>  
-<h1>➕ Add Brand</h1>  
-<p>Admin Panel</p>  
-<input type="text" id="brandName" placeholder="Enter Brand Name">
+<!DOCTYPE html>
+<html lang="en">
 
-<button id="saveBrandBtn">💾 Save Brand</button>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Brand</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>➕ Add Brand</h1>
+<p>Mobile Repair Hub Admin Panel</p>
+
+</header>
+
+<div class="card">
+
+<input
+type="text"
+id="brandName"
+placeholder="Enter Brand Name">
 
 <br><br>
 
-<a href="admin.html">  
-<button>⬅ Back to Dashboard</button>  
+<button id="saveBrandBtn">
+💾 Save Brand
+</button>
+
+<br><br>
+
+<button onclick="location.href='admin.html'">
+⬅ Back to Dashboard
+</button>
+
+</div>
+
 <script type="module" src="add-brand.js"></script>
-</a>  </div>  </body>  
+
+</body>
 
 </html>
