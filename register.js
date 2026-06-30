@@ -44,6 +44,7 @@ registerBtn.addEventListener("click", async () => {
     await setDoc(doc(db, "users", user.uid), {
       fullname: fullname,
       email: email,
+      role: "user",
       createdAt: new Date().toISOString()
     });
 
