@@ -19,14 +19,18 @@ const firebaseConfig = {
   appId: "1:913493157421:web:6707c311a5345f93367aa4"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// Auth
 export const auth = getAuth(app);
 
+// Firestore
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache()
 });
 
+// Google Provider
 export const googleProvider = new GoogleAuthProvider();
 
 googleProvider.setCustomParameters({
