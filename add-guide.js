@@ -18,6 +18,7 @@ async function loadBrands() {
   snapshot.forEach(docSnap => {
 
     const option = document.createElement("option");
+
     option.value = docSnap.data().name;
     option.textContent = docSnap.data().name;
 
@@ -40,13 +41,17 @@ document.getElementById("brandSelect").addEventListener("change", async (e) => {
 
   if (!brand) return;
 
-  const q = query(collection(db, "models"), where("brand", "==", brand));
+  const q = query(
+    collection(db, "models"),
+    where("brand", "==", brand)
+  );
 
   const snapshot = await getDocs(q);
 
   snapshot.forEach(docSnap => {
 
     const option = document.createElement("option");
+
     option.value = docSnap.data().model;
     option.textContent = docSnap.data().model;
 
@@ -59,33 +64,62 @@ document.getElementById("brandSelect").addEventListener("change", async (e) => {
 // Save Guide
 document.getElementById("saveGuideBtn").addEventListener("click", async () => {
 
+  const btn = document.getElementById("saveGuideBtn");
+
   const brand = document.getElementById("brandSelect").value;
   const model = document.getElementById("modelSelect").value;
   const title = document.getElementById("title").value.trim();
-  const steps = document.getElementById("steps").value.trim();
+  const guide = document.getElementById("steps").value.trim();
   const imageUrl = document.getElementById("imageUrl").value.trim();
-  const video = document.getElementById("video").value.trim();
+  const videoUrl = document.getElementById("video").value.trim();
 
-  if (!brand || !model || !title || !steps) {
-    alert("⚠️ Please fill all required fields");
+  if (!brand || !model || !title || !guide) {
+
+    alert("⚠️ Please fill all required fields.");
+
     return;
+
   }
 
+  btn.disabled = true;
+  btn.textContent = "Saving...";
+
   try {
+
+    // Duplicate Check
+
+    const checkQuery = query(
+      collection(db, "guides"),
+      where("brand", "==", brand),
+      where("model", "==", model)
+    );
+
+    const checkSnap = await getDocs(checkQuery);
+
+    if (!checkSnap.empty) {
+
+      alert("⚠️ Guide already exists for this model.");
+
+      btn.disabled = false;
+      btn.textContent = "💾 Save Guide";
+
+      return;
+
+    }
 
     await addDoc(collection(db, "guides"), {
 
       brand,
       model,
       title,
-      steps,
+      guide,
       imageUrl,
-      video,
+      videoUrl,
       createdAt: new Date().toISOString()
 
     });
 
-    alert("✅ Guide Saved Successfully!");
+    alert("✅ Repair Guide Saved Successfully!");
 
     document.getElementById("brandSelect").value = "";
     document.getElementById("modelSelect").innerHTML =
@@ -100,5 +134,8 @@ document.getElementById("saveGuideBtn").addEventListener("click", async () => {
     alert(error.message);
 
   }
+
+  btn.disabled = false;
+  btn.textContent = "💾 Save Guide";
 
 });
