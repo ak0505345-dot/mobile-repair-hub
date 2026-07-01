@@ -9,12 +9,13 @@ import {
 
 const guideList = document.getElementById("guideList");
 const searchGuide = document.getElementById("searchGuide");
+const totalGuides = document.getElementById("totalGuides");
 
 let allGuides = [];
 
 async function loadGuides() {
 
-  guideList.innerHTML = "<h3>⏳ Loading...</h3>";
+  guideList.innerHTML = "<h3>⏳ Loading Guides...</h3>";
 
   try {
 
@@ -31,11 +32,16 @@ async function loadGuides() {
 
     });
 
+    if (totalGuides) {
+      totalGuides.textContent = allGuides.length;
+    }
+
     showGuides(allGuides);
 
   } catch (error) {
 
-    guideList.innerHTML = "<h3>" + error.message + "</h3>";
+    guideList.innerHTML =
+      `<h3 style="color:red;">${error.message}</h3>`;
 
   }
 
@@ -47,7 +53,8 @@ function showGuides(list) {
 
   if (list.length === 0) {
 
-    guideList.innerHTML = "<h3>No Guides Found</h3>";
+    guideList.innerHTML = "<h3>📭 No Repair Guides Found</h3>";
+
     return;
 
   }
@@ -55,24 +62,43 @@ function showGuides(list) {
   list.forEach((item) => {
 
     const card = document.createElement("div");
+
     card.className = "card";
 
     card.innerHTML = `
 
       ${item.imageUrl ?
-      `<img src="${item.imageUrl}"
-      style="width:100%;max-width:180px;border-radius:10px;margin-bottom:10px;">`
+
+      `<img
+      src="${item.imageUrl}"
+      style="
+      width:100%;
+      max-width:200px;
+      border-radius:10px;
+      margin-bottom:10px;
+      ">`
+
       : ""}
 
-      <h3>📱 ${item.brand} - ${item.model}</h3>
+      <h3>📱 ${item.brand || "-"} - ${item.model || "-"}</h3>
 
-      <p><b>🔧 Repair:</b> ${item.repairType}</p>
+      <p><b>🔧 Repair:</b> ${item.repairType || "-"}</p>
 
-      <button class="editBtn">✏️ Edit</button>
+      ${item.video ?
+      `<p><a href="${item.video}" target="_blank">🎥 Watch Video</a></p>`
+      : ""}
 
-      <button class="deleteBtn">🗑 Delete</button>
+      <button class="editBtn">
+      ✏️ Edit
+      </button>
+
+      <button class="deleteBtn">
+      🗑 Delete
+      </button>
 
     `;
+
+    // Edit
 
     card.querySelector(".editBtn").onclick = () => {
 
@@ -82,15 +108,17 @@ function showGuides(list) {
 
     };
 
+    // Delete
+
     card.querySelector(".deleteBtn").onclick = async () => {
 
-      if (!confirm("Delete this guide?")) return;
+      if (!confirm("Delete this repair guide?")) return;
 
       try {
 
         await deleteDoc(doc(db, "guides", item.id));
 
-        alert("✅ Guide Deleted");
+        alert("✅ Guide Deleted Successfully");
 
         loadGuides();
 
@@ -110,14 +138,18 @@ function showGuides(list) {
 
 }
 
+// Live Search
+
 searchGuide.addEventListener("input", () => {
 
-  const text = searchGuide.value.toLowerCase();
+  const text = searchGuide.value.toLowerCase().trim();
 
   const filtered = allGuides.filter(item =>
 
     (item.brand || "").toLowerCase().includes(text) ||
+
     (item.model || "").toLowerCase().includes(text) ||
+
     (item.repairType || "").toLowerCase().includes(text)
 
   );
