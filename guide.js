@@ -23,30 +23,23 @@ async function loadGuide() {
   const snapshot = await getDocs(q);
 
   if (snapshot.empty) {
-
-    document.getElementById("guideTitle").textContent =
-      "No Guide Found";
-
-    document.getElementById("guideSteps").textContent =
-      "No repair guide available.";
-
+    document.getElementById("guideTitle").textContent = "No Guide Found";
     return;
-
   }
 
   const guide = snapshot.docs[0].data();
 
   document.getElementById("guideTitle").textContent =
-    guide.title || "";
+    guide.title || guide.model;
 
   document.getElementById("guideBrand").textContent =
-    guide.brand || "";
+    guide.brand;
 
   document.getElementById("guideModel").textContent =
-    guide.model || "";
+    guide.model;
 
   document.getElementById("guideSteps").textContent =
-    guide.steps || "No repair steps available.";
+    guide.guide || "No repair steps available.";
 
   if (guide.imageUrl) {
 
@@ -58,10 +51,10 @@ async function loadGuide() {
 
   }
 
-  if (guide.video) {
+  if (guide.videoUrl) {
 
     document.getElementById("videoSection").innerHTML = `
-      <a href="${guide.video}" target="_blank">
+      <a href="${guide.videoUrl}" target="_blank">
         <button>🎥 Watch Repair Video</button>
       </a>
     `;
@@ -80,21 +73,19 @@ document.getElementById("favoriteBtn").onclick = () => {
   let favorites =
     JSON.parse(localStorage.getItem("favorites")) || [];
 
-  const guide = {
-
-    title: document.getElementById("guideTitle").textContent,
+  const item = {
 
     brand: document.getElementById("guideBrand").textContent,
 
-    model: document.getElementById("guideModel").textContent
+    model: document.getElementById("guideModel").textContent,
+
+    title: document.getElementById("guideTitle").textContent
 
   };
 
-  const exists = favorites.find(item =>
-
-    item.brand === guide.brand &&
-    item.model === guide.model
-
+  const exists = favorites.find(f =>
+    f.brand === item.brand &&
+    f.model === item.model
   );
 
   if (exists) {
@@ -105,7 +96,7 @@ document.getElementById("favoriteBtn").onclick = () => {
 
   }
 
-  favorites.push(guide);
+  favorites.push(item);
 
   localStorage.setItem(
     "favorites",
