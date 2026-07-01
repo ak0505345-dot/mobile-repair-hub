@@ -23,8 +23,12 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 
-export const googleProvider = new GoogleAuthProvider();
-
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache()
+});
+
+export const googleProvider = new GoogleAuthProvider();
+
+googleProvider.setCustomParameters({
+  prompt: "select_account"
 });
