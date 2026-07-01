@@ -3,60 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upload Repair Image</title>
+<title>Upload Guide Image</title>
+
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-<h1>📷 Upload Repair Image</h1>
+<h1>📷 Upload Guide Image</h1>
 <p>Mobile Repair Hub Admin</p>
 </header>
 
 <div class="card">
 
-<label>Select Image</label>
-<input
-type="file"
-id="imageFile"
-accept="image/*">
+<h2>Select Image</h2>
+
+<input type="file" id="imageFile" accept="image/*">
 
 <br><br>
 
-<label>Brand Name</label>
-<input
-type="text"
-id="brand"
-placeholder="Samsung">
-
-<br><br>
-
-<label>Model Name</label>
-<input
-type="text"
-id="model"
-placeholder="Galaxy A15">
+<img
+id="previewImage"
+style="
+display:none;
+width:100%;
+max-width:300px;
+border-radius:10px;
+">
 
 <br><br>
 
 <button id="uploadBtn">
-📤 Upload Image
+☁ Upload Image
 </button>
 
 <br><br>
 
-<label>Image URL</label>
+<p id="uploadStatus"></p>
+
+<br><br>
 
 <input
 type="text"
 id="imageUrl"
 readonly
-placeholder="Image URL will appear here">
+placeholder="Uploaded image URL will appear here">
 
 <br><br>
 
 <button id="copyBtn">
-📋 Copy URL
+📋 Copy Image URL
 </button>
 
 <br><br>
@@ -69,7 +65,7 @@ placeholder="Image URL will appear here">
 
 </div>
 
-<script src="upload-image.js"></script>
+<script type="module" src="upload-image.js"></script>
 
 </body>
 </html>

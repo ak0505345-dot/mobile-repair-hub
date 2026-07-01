@@ -1,80 +1,79 @@
-import { auth } from "./firebase.js";
+import { auth, googleProvider } from "./firebase.js";
 
 import {
-  signInWithEmailAndPassword,
-  signOut
+signInWithEmailAndPassword,
+signInWithRedirect,
+getRedirectResult
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
-const loginBtn = document.getElementById("loginBtn");
+// Google Redirect Result
+getRedirectResult(auth)
+.then((result)=>{
 
-loginBtn.addEventListener("click", async () => {
+if(result){
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+alert("✅ Google Login Successful");
 
-  if (!email || !password) {
-    alert("⚠️ Please enter email and password.");
-    return;
-  }
+window.location.href="home.html";
 
-  try {
+}
 
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Logging in...";
+})
+.catch((error)=>{
 
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+console.log(error);
 
-    const user = userCredential.user;
+});
 
-    // Email Verification Check
-    await user.reload();
+// Email Login
+document.getElementById("loginBtn").addEventListener("click",async()=>{
 
-    if (!user.emailVerified) {
+const email=document.getElementById("email").value.trim();
 
-      await signOut(auth);
+const password=document.getElementById("password").value.trim();
 
-      alert(
-        "⚠️ Your email is not verified.\n\nPlease verify your email before logging in."
-      );
+if(!email||!password){
 
-      return;
+alert("Please enter email and password.");
 
-    }
+return;
 
-    alert("✅ Login Successful!");
+}
 
-    window.location.href = "admin.html";
+try{
 
-  } catch (error) {
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
 
-    switch (error.code) {
+alert("✅ Login Successful");
 
-      case "auth/invalid-credential":
-        alert("❌ Invalid email or password.");
-        break;
+window.location.href="home.html";
 
-      case "auth/user-not-found":
-        alert("❌ User not found.");
-        break;
+}catch(error){
 
-      case "auth/wrong-password":
-        alert("❌ Incorrect password.");
-        break;
+alert(error.message);
 
-      default:
-        alert(error.message);
+}
 
-    }
+});
 
-  } finally {
+// Google Login
+document.getElementById("googleLoginBtn").addEventListener("click",async()=>{
 
-    loginBtn.disabled = false;
-    loginBtn.textContent = "🔐 Login";
+try{
 
-  }
+await signInWithRedirect(
+auth,
+googleProvider
+);
+
+}catch(error){
+
+alert(error.message);
+
+}
 
 });

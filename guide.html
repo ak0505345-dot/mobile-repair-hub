@@ -6,81 +6,46 @@
 <title>Repair Guide</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <header>
 <h1>📖 Repair Guide</h1>
-<p id="modelTitle">Loading...</p>
 </header>
 
 <div class="card">
 
+<h2 id="guideTitle">Loading...</h2>
+
+<p><b>Brand:</b> <span id="guideBrand"></span></p>
+
+<p><b>Model:</b> <span id="guideModel"></span></p>
+
 <img
 id="guideImage"
-src=""
-alt="Repair Image"
-style="width:100%;max-width:350px;border-radius:10px;display:none;margin:auto;">
+style="width:100%;max-width:300px;border-radius:12px;display:none;">
 
 <br><br>
 
-<h2 id="repairType">Loading...</h2>
+<h3>🔧 Repair Steps</h3>
 
-<button
-id="favoriteBtn"
-style="width:100%;">
-🤍 Add to Favorites
-</button>
-
-<hr>
-
-<h3>👁️ Total Views</h3>
-<p id="views">0 Views</p>
-
-<hr>
-
-<h3>⭐ Difficulty</h3>
-<p id="difficulty">Loading...</p>
-
-<hr>
-
-<h3>⏱️ Repair Time</h3>
-<p id="repairTime">Loading...</p>
-
-<hr>
-
-<h3>🛠️ Required Tools</h3>
-<p id="tools">Loading...</p>
-
-<hr>
-
-<h3>📦 Spare Parts</h3>
-<p id="parts">Loading...</p>
-
-<hr>
-
-<h3>📝 Step-by-Step Guide</h3>
-
-<div
-id="guideText"
-style="text-align:left;line-height:1.8;">
-Loading guide...
-</div>
+<p id="guideSteps"></p>
 
 <br>
 
-<button
-id="videoBtn"
-style="display:none;width:100%;">
-▶️ Watch Repair Video
+<div id="videoSection"></div>
+
+<br>
+
+<button id="favoriteBtn">
+❤️ Add to Favorites
 </button>
 
 <br><br>
 
-<a href="models.html">
-<button style="width:100%;">
-⬅ Back to Models
+<button onclick="history.back()">
+⬅ Back
 </button>
-</a>
 
 </div>
 

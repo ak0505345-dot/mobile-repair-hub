@@ -1,8 +1,8 @@
-import { auth, db } from "./firebase.js";
+import { auth, db, googleProvider } from "./firebase.js";
 
 import {
   createUserWithEmailAndPassword,
-  sendEmailVerification
+  signInWithRedirect
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
@@ -10,28 +10,19 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-const registerBtn = document.getElementById("registerBtn");
-
-registerBtn.addEventListener("click", async () => {
+// Email Register
+document.getElementById("registerBtn").addEventListener("click", async () => {
 
   const fullname = document.getElementById("fullname").value.trim();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
   if (!fullname || !email || !password) {
-    alert("⚠️ Please fill all fields.");
-    return;
-  }
-
-  if (password.length < 6) {
-    alert("⚠️ Password must be at least 6 characters.");
+    alert("Please fill all fields.");
     return;
   }
 
   try {
-
-    registerBtn.disabled = true;
-    registerBtn.textContent = "Creating Account...";
 
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -39,18 +30,14 @@ registerBtn.addEventListener("click", async () => {
       password
     );
 
-    const user = userCredential.user;
-
-    await setDoc(doc(db, "users", user.uid), {
-      fullname: fullname,
-      email: email,
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      fullname,
+      email,
       role: "user",
       createdAt: new Date().toISOString()
     });
 
-    await sendEmailVerification(user);
-
-    alert("✅ Account Created!\n\nVerification email has been sent. Please verify your email before login.");
+    alert("✅ Account Created Successfully!");
 
     window.location.href = "login.html";
 
@@ -58,10 +45,20 @@ registerBtn.addEventListener("click", async () => {
 
     alert(error.message);
 
-  } finally {
+  }
 
-    registerBtn.disabled = false;
-    registerBtn.textContent = "Create Account";
+});
+
+// Google Register
+document.getElementById("googleRegisterBtn").addEventListener("click", async () => {
+
+  try {
+
+    await signInWithRedirect(auth, googleProvider);
+
+  } catch (error) {
+
+    alert(error.message);
 
   }
 

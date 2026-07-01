@@ -1,131 +1,102 @@
 import { db } from "./firebase.js";
 
 import {
-  collection,
-  getDocs
+collection,
+getDocs,
+query,
+where
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-const model = localStorage.getItem("selectedModel");
+const params = new URLSearchParams(window.location.search);
 
-document.getElementById("modelTitle").textContent = model;
-
-const guideImage = document.getElementById("guideImage");
-const videoBtn = document.getElementById("videoBtn");
-const guideText = document.getElementById("guideText");
+const brand = params.get("brand");
+const model = params.get("model");
 
 async function loadGuide() {
 
-  try {
+const q = query(
+collection(db, "guides"),
+where("brand", "==", brand),
+where("model", "==", model)
+);
 
-    const snapshot = await getDocs(collection(db, "guides"));
+const snapshot = await getDocs(q);
 
-    let found = false;
+if (snapshot.empty) {
 
-    snapshot.forEach((doc) => {
+document.getElementById("guideTitle").textContent =
+"No Guide Found";
 
-      const data = doc.data();
+return;
 
-      if (data.model && data.model.trim() === model.trim()) {
+}
 
-        document.getElementById("repairType").textContent =
-          data.repairType || "";
+const guide = snapshot.docs[0].data();
 
-        document.getElementById("difficulty").textContent =
-          data.difficulty || "Not Available";
+document.getElementById("guideTitle").textContent = guide.title;
+document.getElementById("guideBrand").textContent = guide.brand;
+document.getElementById("guideModel").textContent = guide.model;
+document.getElementById("guideSteps").textContent = guide.steps;
 
-        document.getElementById("repairTime").textContent =
-          data.repairTime || "Not Available";
+if (guide.imageUrl) {
 
-        document.getElementById("tools").textContent =
-          data.tools || "Not Available";
+const img = document.getElementById("guideImage");
 
-        document.getElementById("parts").textContent =
-          data.parts || "Not Available";
+img.src = guide.imageUrl;
+img.style.display = "block";
 
-        guideText.innerHTML = "";
+}
 
-        if (data.guide) {
+if (guide.video) {
 
-          const steps = data.guide.split("\n");
-          steps.forEach(step => {
+document.getElementById("videoSection").innerHTML =
 
-            if (step.trim() !== "") {
+`<a href="${guide.video}" target="_blank">
+<button>🎥 Watch Repair Video</button>
+</a>`;
 
-              const p = document.createElement("p");
+}
 
-              p.textContent = "✅ " + step;
+}
 
-              guideText.appendChild(p);
+document.getElementById("favoriteBtn").onclick = () => {
 
-            }
+let favorites =
+JSON.parse(localStorage.getItem("favorites")) || [];
 
-          });
+const guide = {
 
-        }
+title: document.getElementById("guideTitle").textContent,
 
-        // Image
+brand: document.getElementById("guideBrand").textContent,
 
-        if (data.imageUrl) {
+model: document.getElementById("guideModel").textContent
 
-          guideImage.src = data.imageUrl;
+};
 
-          guideImage.style.display = "block";
+const exists = favorites.find(item =>
 
-        } else {
+item.brand === guide.brand &&
+item.model === guide.model
 
-          guideImage.style.display = "none";
+);
 
-        }
+if (exists) {
 
-        // Video
+alert("❤️ Already Added to Favorites");
+return;
 
-        if (data.videoUrl) {
+}
 
-          videoBtn.style.display = "block";
+favorites.push(guide);
 
-          videoBtn.onclick = () => {
+localStorage.setItem(
+"favorites",
+JSON.stringify(favorites)
+);
 
-            window.open(data.videoUrl, "_blank");
+alert("✅ Added to Favorites");
 
-          };
+};
 
-        } else {
-
-          videoBtn.style.display = "none";
-
-        }
-
-        // Views
-
-        document.getElementById("views").textContent =
-          (data.views || 0) + " Views";
-
-        found = true;
-
-      }
-
-    });
-
-    if (!found) {
-
-      document.getElementById("repairType").textContent = "";
-
-      document.getElementById("difficulty").textContent = "";
-
-      document.getElementById("repairTime").textContent = "";
-
-      document.getElementById("tools").textContent = "";
-
-      document.getElementById("parts").textContent = "";
-
-      guideText.textContent = "Guide not found.";
-
-    }
-
-  } catch (error) {
-
-    guideText.textContent = error.message;
-
-  }
-
-}loadGuide();
+loadGuide();

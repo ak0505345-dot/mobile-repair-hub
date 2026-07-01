@@ -1,62 +1,90 @@
 import { db } from "./firebase.js";
+
 import {
-  collection,
-  getDocs
+collection,
+getDocs
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-const searchBox = document.getElementById("searchBox");
-const searchResult = document.getElementById("searchResult");
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
 
-let allModels = [];
+let guides = [];
 
-async function loadModels() {
+async function loadGuides() {
 
-  const snapshot = await getDocs(collection(db, "models"));
+const snapshot = await getDocs(collection(db,"guides"));
 
-  snapshot.forEach((doc) => {
-    allModels.push(doc.data());
-  });
+guides = [];
+
+snapshot.forEach(doc => {
+
+guides.push(doc.data());
+
+});
+
+showResults(guides);
 
 }
 
-loadModels();
+function showResults(list){
 
-searchBox.addEventListener("input", () => {
+searchResults.innerHTML="";
 
-  const text = searchBox.value.toLowerCase().trim();
+if(list.length===0){
 
-  searchResult.innerHTML = "";
+searchResults.innerHTML="<h3>No Guides Found</h3>";
+return;
 
-  if (text === "") return;
+}
 
-  const result = allModels.filter(item =>
-    item.model.toLowerCase().includes(text)
-  );
+list.forEach(item=>{
 
-  if (result.length === 0) {
-    searchResult.innerHTML = "<p>No Model Found</p>";
-    return;
-  }
+const card=document.createElement("div");
 
-  result.forEach(item => {
+card.className="card";
 
-    const button = document.createElement("button");
+card.innerHTML=`
 
-    button.textContent = item.brand + " - " + item.model;
+<h3>${item.title}</h3>
 
-    button.onclick = () => {
+<p>📱 ${item.brand} - ${item.model}</p>
 
-      localStorage.setItem("selectedBrand", item.brand);
-      localStorage.setItem("selectedModel", item.model);
+<button>📖 Open Guide</button>
 
-      window.location.href = "guide.html";
+`;
 
-    };
+card.querySelector("button").onclick=()=>{
 
-    searchResult.appendChild(button);
-    searchResult.appendChild(document.createElement("br"));
-    searchResult.appendChild(document.createElement("br"));
+location.href=
+"guide.html?brand="+
+encodeURIComponent(item.brand)+
+"&model="+
+encodeURIComponent(item.model);
 
-  });
+};
+
+searchResults.appendChild(card);
+
+searchResults.appendChild(document.createElement("br"));
 
 });
+
+}
+
+searchInput.addEventListener("input",()=>{
+
+const text=searchInput.value.toLowerCase();
+
+const filtered = guides.filter(item=>
+
+(item.title || "").toLowerCase().includes(text) ||
+(item.brand || "").toLowerCase().includes(text) ||
+(item.model || "").toLowerCase().includes(text)
+
+);
+
+showResults(filtered);
+
+});
+
+loadGuides();

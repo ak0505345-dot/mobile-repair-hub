@@ -1,74 +1,83 @@
+import { db } from "./firebase.js";
+import {
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
 const CLOUD_NAME = "dflm2eduw";
-const UPLOAD_PRESET = "mobile repair hub";
+const UPLOAD_PRESET = "mobile-repair-hub";
 
 const imageFile = document.getElementById("imageFile");
+const previewImage = document.getElementById("previewImage");
 const uploadBtn = document.getElementById("uploadBtn");
+const uploadStatus = document.getElementById("uploadStatus");
 const imageUrl = document.getElementById("imageUrl");
 const copyBtn = document.getElementById("copyBtn");
 
-uploadBtn.addEventListener("click", async () => {
+let selectedFile = null;
 
-  if (!imageFile.files[0]) {
-    alert("⚠️ Please select an image.");
-    return;
-  }
+imageFile.addEventListener("change", () => {
 
-  uploadBtn.disabled = true;
-  uploadBtn.textContent = "Uploading...";
+    selectedFile = imageFile.files[0];
 
-  const formData = new FormData();
-  formData.append("file", imageFile.files[0]);
-  formData.append("upload_preset", UPLOAD_PRESET);
+    if (!selectedFile) return;
 
-  try {
-
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      {
-        method: "POST",
-        body: formData
-      }
-    );
-
-    const data = await response.json();
-
-    if (data.secure_url) {
-
-      imageUrl.value = data.secure_url;
-
-      alert("✅ Image Uploaded Successfully!");
-
-    } else {
-
-      alert("❌ Upload Failed");
-
-      console.log(data);
-
-    }
-
-  } catch (error) {
-
-    alert(error.message);
-
-  }
-
-  uploadBtn.disabled = false;
-  uploadBtn.textContent = "📤 Upload Image";
+    previewImage.src = URL.createObjectURL(selectedFile);
+    previewImage.style.display = "block";
 
 });
 
-copyBtn.addEventListener("click", () => {
+uploadBtn.addEventListener("click", async () => {
 
-  if (imageUrl.value === "") {
+    if (!selectedFile) {
+        alert("Please select an image.");
+        return;
+    }
 
-    alert("No Image URL");
+    uploadStatus.textContent = "Uploading...";
 
-    return;
+    const formData = new FormData();
 
-  }
+    formData.append("file", selectedFile);
+    formData.append("upload_preset", UPLOAD_PRESET);
 
-  navigator.clipboard.writeText(imageUrl.value);
+    try {
 
-  alert("✅ URL Copied!");
+        const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error.message);
+        }
+
+        imageUrl.value = data.secure_url;
+
+        uploadStatus.textContent = "✅ Upload Successful";
+
+    } catch (error) {
+
+        uploadStatus.textContent = error.message;
+
+    }
+
+});
+
+copyBtn.addEventListener("click", async () => {
+
+    if (imageUrl.value === "") {
+        alert("No URL available.");
+        return;
+    }
+
+    await navigator.clipboard.writeText(imageUrl.value);
+
+    alert("Image URL copied!");
 
 });

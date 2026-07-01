@@ -1,83 +1,92 @@
 import { db } from "./firebase.js";
+
 import {
-  collection,
-  query,
-  where,
-  getDocs
+collection,
+getDocs,
+query,
+where
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-const brand = localStorage.getItem("selectedBrand");
+const params = new URLSearchParams(window.location.search);
+const brand = params.get("brand");
 
-document.getElementById("brandTitle").textContent = brand;
+document.getElementById("brandTitle").textContent = "📱 " + brand;
 
 const modelList = document.getElementById("modelList");
-const searchBox = document.getElementById("searchBox");
+const searchModel = document.getElementById("searchModel");
 
-let allModels = [];
+let models = [];
 
 async function loadModels() {
 
-  try {
+const q = query(
+collection(db,"models"),
+where("brand","==",brand)
+);
 
-    const q = query(
-      collection(db, "models"),
-      where("brand", "==", brand)
-    );
+const snapshot = await getDocs(q);
 
-    const snapshot = await getDocs(q);
+models = [];
 
-    allModels = [];
+snapshot.forEach(doc => {
 
-    snapshot.forEach((doc) => {
-      allModels.push(doc.data().model);
-    });
+models.push(doc.data().model);
 
-    showModels(allModels);
+});
 
-  } catch (error) {
-
-    modelList.innerHTML = error.message;
-
-  }
+showModels(models);
 
 }
 
-function showModels(models) {
+function showModels(list){
 
-  modelList.innerHTML = "";
+modelList.innerHTML="";
 
-  if (models.length === 0) {
-    modelList.innerHTML = "<h3>No Models Found</h3>";
-    return;
-  }
+if(list.length===0){
 
-  models.forEach((model) => {
-
-    const button = document.createElement("button");
-    button.textContent = model;
-
-    button.onclick = () => {
-      localStorage.setItem("selectedModel", model);
-      window.location.href = "guide.html";
-    };
-
-    modelList.appendChild(button);
-    modelList.appendChild(document.createElement("br"));
-    modelList.appendChild(document.createElement("br"));
-
-  });
+modelList.innerHTML="<h3>No Models Found</h3>";
+return;
 
 }
 
-searchBox.addEventListener("input", () => {
+list.forEach(model=>{
 
-  const text = searchBox.value.toLowerCase();
+const btn=document.createElement("button");
 
-  const filtered = allModels.filter(model =>
-    model.toLowerCase().includes(text)
-  );
+btn.textContent="📱 "+model;
 
-  showModels(filtered);
+btn.onclick=()=>{
+
+location.href=
+"guide.html?brand="+
+encodeURIComponent(brand)+
+"&model="+
+encodeURIComponent(model);
+
+};
+
+modelList.appendChild(btn);
+
+modelList.appendChild(document.createElement("br"));
+modelList.appendChild(document.createElement("br"));
+
+});
+
+}
+
+searchModel.addEventListener("input",()=>{
+
+const text=searchModel.value.toLowerCase();
+
+showModels(
+
+models.filter(model=>
+
+model.toLowerCase().includes(text)
+
+)
+
+);
 
 });
 
