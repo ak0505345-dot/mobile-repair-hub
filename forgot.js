@@ -1,55 +1,18 @@
-import { auth } from "./firebase.js";
-
-import {
-  sendPasswordResetEmail
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
 const resetBtn = document.getElementById("resetBtn");
 
-resetBtn.addEventListener("click", async () => {
+resetBtn.addEventListener("click", () => {
 
   const email = document.getElementById("email").value.trim();
 
   if (!email) {
-    alert("⚠️ Please enter your email.");
+    alert("⚠️ Please enter your email address.");
     return;
   }
 
-  try {
+  alert(
+    "📩 Request Submitted!\n\nPlease contact the administrator to reset your password.\n\nAdmin will verify your account and help you regain access."
+  );
 
-    resetBtn.disabled = true;
-    resetBtn.textContent = "Sending...";
-
-    await sendPasswordResetEmail(auth, email);
-
-    alert(
-      "✅ Password reset link has been sent.\n\nPlease check your email inbox and spam folder."
-    );
-
-    window.location.href = "login.html";
-
-  } catch (error) {
-
-    switch (error.code) {
-
-      case "auth/user-not-found":
-        alert("❌ No account found with this email.");
-        break;
-
-      case "auth/invalid-email":
-        alert("❌ Invalid email address.");
-        break;
-
-      default:
-        alert(error.message);
-
-    }
-
-  } finally {
-
-    resetBtn.disabled = false;
-    resetBtn.textContent = "📩 Send Reset Link";
-
-  }
+  window.location.href = "login.html";
 
 });
