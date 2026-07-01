@@ -1,10 +1,10 @@
 import { db } from "./firebase.js";
 
 import {
-collection,
-getDocs,
-query,
-where
+  collection,
+  getDocs,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const params = new URLSearchParams(window.location.search);
@@ -14,88 +14,105 @@ const model = params.get("model");
 
 async function loadGuide() {
 
-const q = query(
-collection(db, "guides"),
-where("brand", "==", brand),
-where("model", "==", model)
-);
+  const q = query(
+    collection(db, "guides"),
+    where("brand", "==", brand),
+    where("model", "==", model)
+  );
 
-const snapshot = await getDocs(q);
+  const snapshot = await getDocs(q);
 
-if (snapshot.empty) {
+  if (snapshot.empty) {
 
-document.getElementById("guideTitle").textContent =
-"No Guide Found";
+    document.getElementById("guideTitle").textContent =
+      "No Guide Found";
 
-return;
+    document.getElementById("guideSteps").textContent =
+      "No repair guide available.";
 
-}
+    return;
 
-const guide = snapshot.docs[0].data();
+  }
 
-document.getElementById("guideTitle").textContent = guide.title;
-document.getElementById("guideBrand").textContent = guide.brand;
-document.getElementById("guideModel").textContent = guide.model;
-document.getElementById("guideSteps").textContent = guide.steps;
+  const guide = snapshot.docs[0].data();
 
-if (guide.imageUrl) {
+  document.getElementById("guideTitle").textContent =
+    guide.title || "";
 
-const img = document.getElementById("guideImage");
+  document.getElementById("guideBrand").textContent =
+    guide.brand || "";
 
-img.src = guide.imageUrl;
-img.style.display = "block";
+  document.getElementById("guideModel").textContent =
+    guide.model || "";
 
-}
+  document.getElementById("guideSteps").textContent =
+    guide.steps || "No repair steps available.";
 
-if (guide.video) {
+  if (guide.imageUrl) {
 
-document.getElementById("videoSection").innerHTML =
+    const img = document.getElementById("guideImage");
 
-`<a href="${guide.video}" target="_blank">
-<button>🎥 Watch Repair Video</button>
-</a>`;
+    img.src = guide.imageUrl;
 
-}
+    img.style.display = "block";
+
+  }
+
+  if (guide.video) {
+
+    document.getElementById("videoSection").innerHTML = `
+      <a href="${guide.video}" target="_blank">
+        <button>🎥 Watch Repair Video</button>
+      </a>
+    `;
+
+  } else {
+
+    document.getElementById("videoSection").innerHTML =
+      "<p>No repair video available.</p>";
+
+  }
 
 }
 
 document.getElementById("favoriteBtn").onclick = () => {
 
-let favorites =
-JSON.parse(localStorage.getItem("favorites")) || [];
+  let favorites =
+    JSON.parse(localStorage.getItem("favorites")) || [];
 
-const guide = {
+  const guide = {
 
-title: document.getElementById("guideTitle").textContent,
+    title: document.getElementById("guideTitle").textContent,
 
-brand: document.getElementById("guideBrand").textContent,
+    brand: document.getElementById("guideBrand").textContent,
 
-model: document.getElementById("guideModel").textContent
+    model: document.getElementById("guideModel").textContent
 
-};
+  };
 
-const exists = favorites.find(item =>
+  const exists = favorites.find(item =>
 
-item.brand === guide.brand &&
-item.model === guide.model
+    item.brand === guide.brand &&
+    item.model === guide.model
 
-);
+  );
 
-if (exists) {
+  if (exists) {
 
-alert("❤️ Already Added to Favorites");
-return;
+    alert("❤️ Already Added to Favorites");
 
-}
+    return;
 
-favorites.push(guide);
+  }
 
-localStorage.setItem(
-"favorites",
-JSON.stringify(favorites)
-);
+  favorites.push(guide);
 
-alert("✅ Added to Favorites");
+  localStorage.setItem(
+    "favorites",
+    JSON.stringify(favorites)
+  );
+
+  alert("✅ Added to Favorites");
 
 };
 
