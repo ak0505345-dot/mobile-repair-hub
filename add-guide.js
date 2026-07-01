@@ -1,35 +1,27 @@
 import { db } from "./firebase.js";
+
 import {
   collection,
   addDoc,
   getDocs,
   query,
-  where,
-  updateDoc
+  where
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-// --------------------
-// Cloudinary Settings
-// --------------------
-const CLOUD_NAME = "dflm2eduw";
-const UPLOAD_PRESET = "mobile repair hub";
-
-// --------------------
 // Load Brands
-// --------------------
 async function loadBrands() {
 
-  const select = document.getElementById("brandName");
+  const brandSelect = document.getElementById("brandSelect");
 
   const snapshot = await getDocs(collection(db, "brands"));
 
-  snapshot.forEach((doc) => {
+  snapshot.forEach(docSnap => {
 
     const option = document.createElement("option");
-    option.value = doc.data().name;
-    option.textContent = doc.data().name;
+    option.value = docSnap.data().name;
+    option.textContent = docSnap.data().name;
 
-    select.appendChild(option);
+    brandSelect.appendChild(option);
 
   });
 
@@ -37,160 +29,71 @@ async function loadBrands() {
 
 loadBrands();
 
-// --------------------
-// Upload Image
-// --------------------
-document.getElementById("uploadImageBtn").addEventListener("click", async () => {
+// Load Models
+document.getElementById("brandSelect").addEventListener("change", async (e) => {
 
-  const file = document.getElementById("imageFile").files[0];
+  const brand = e.target.value;
 
-  if (!file) {
-    alert("⚠️ Please select an image.");
-    return;
-  }
+  const modelSelect = document.getElementById("modelSelect");
 
-  const btn = document.getElementById("uploadImageBtn");
+  modelSelect.innerHTML = `<option value="">Select Model</option>`;
 
-  btn.disabled = true;
-  btn.textContent = "⏳ Uploading...";
+  if (!brand) return;
 
-  const formData = new FormData();
+  const q = query(collection(db, "models"), where("brand", "==", brand));
 
-  formData.append("file", file);
-  formData.append("upload_preset", UPLOAD_PRESET);
+  const snapshot = await getDocs(q);
 
-  try {
+  snapshot.forEach(docSnap => {
 
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      {
-        method: "POST",
-        body: formData
-      }
-    );
+    const option = document.createElement("option");
+    option.value = docSnap.data().model;
+    option.textContent = docSnap.data().model;
 
-    const data = await response.json();
+    modelSelect.appendChild(option);
 
-    if (data.secure_url) {
-
-      document.getElementById("imageUrl").value = data.secure_url;
-
-      alert("✅ Image Uploaded Successfully!");
-
-    } else {
-
-      alert("❌ Upload Failed");
-
-      console.log(data);
-
-    }
-
-  } catch (error) {
-
-    alert(error.message);
-
-  }
-
-  btn.disabled = false;
-  btn.textContent = "📤 Upload Image";
+  });
 
 });
 
-// --------------------
 // Save Guide
-// --------------------
 document.getElementById("saveGuideBtn").addEventListener("click", async () => {
 
-  const brand = document.getElementById("brandName").value.trim();
-  const model = document.getElementById("modelName").value.trim();
-  const repairType = document.getElementById("repairType").value.trim();
+  const brand = document.getElementById("brandSelect").value;
+  const model = document.getElementById("modelSelect").value;
+  const title = document.getElementById("title").value.trim();
+  const steps = document.getElementById("steps").value.trim();
   const imageUrl = document.getElementById("imageUrl").value.trim();
-  const videoUrl = document.getElementById("videoUrl").value.trim();
+  const video = document.getElementById("video").value.trim();
 
-  const tools = document.getElementById("tools").value.trim();
-  const parts = document.getElementById("parts").value.trim();
-  const repairTime = document.getElementById("repairTime").value.trim();
-  const difficulty = document.getElementById("difficulty").value;
-
-  const guide = document.getElementById("guideText").value.trim();
-
-  if (
-    !brand ||
-    !model ||
-    !repairType ||
-    !imageUrl ||
-    !videoUrl ||
-    !tools ||
-    !parts ||
-    !repairTime ||
-    !difficulty ||
-    !guide
-  ) {
-
-    alert("⚠️ Please fill all fields.");
-
+  if (!brand || !model || !title || !steps) {
+    alert("⚠️ Please fill all required fields");
     return;
-
   }
 
   try {
 
-    const q = query(
-      collection(db, "guides"),
-      where("brand", "==", brand),
-      where("model", "==", model),
-      where("repairType", "==", repairType)
-    );
+    await addDoc(collection(db, "guides"), {
 
-    const snapshot = await getDocs(q);
+      brand,
+      model,
+      title,
+      steps,
+      imageUrl,
+      video,
+      createdAt: new Date().toISOString()
 
-    if (!snapshot.empty) {
+    });
 
-      await updateDoc(snapshot.docs[0].ref, {
+    alert("✅ Guide Saved Successfully!");
 
-        imageUrl,
-        videoUrl,
-        tools,
-        parts,
-        repairTime,
-        difficulty,
-        guide
-
-      });
-
-      alert("✅ Guide Updated Successfully!");
-
-    } else {
-
-      await addDoc(collection(db, "guides"), {
-
-        brand,
-        model,
-        repairType,
-        imageUrl,
-        videoUrl,
-        tools,
-        parts,
-        repairTime,
-        difficulty,
-        guide
-
-      });
-
-      alert("✅ Guide Saved Successfully!");
-
-    }
-
-    document.getElementById("modelName").value = "";
-    document.getElementById("repairType").value = "";
+    document.getElementById("brandSelect").value = "";
+    document.getElementById("modelSelect").innerHTML =
+      `<option value="">Select Model</option>`;
+    document.getElementById("title").value = "";
+    document.getElementById("steps").value = "";
     document.getElementById("imageUrl").value = "";
-    document.getElementById("videoUrl").value = "";
-    document.getElementById("tools").value = "";
-    document.getElementById("parts").value = "";
-    document.getElementById("repairTime").value = "";
-    document.getElementById("difficulty").value = "";
-    document.getElementById("guideText").value = "";
-    document.getElementById("imageFile").value = "";
+    document.getElementById("video").value = "";
 
   } catch (error) {
 
